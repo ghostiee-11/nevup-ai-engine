@@ -44,7 +44,14 @@ def test_overtrading_pathology_when_many_trades_in_window():
 
 
 def test_plan_non_adherence_when_low_ratings_dominate():
-    trades = [_t(trade_id=str(i), plan_adherence=1) for i in range(20)]
+    # Mixed outcomes so the trader isn't mistaken for a perfect-win
+    # premature_exit case; deviation from plan is the dominant signal.
+    trades = [
+        _t(trade_id=str(i), plan_adherence=1,
+           outcome="loss" if i % 2 else "win",
+           pnl=-50.0 if i % 2 else 100.0)
+        for i in range(20)
+    ]
     scored = score_pathologies(trades)
     assert scored[0]["pathology"] == "plan_non_adherence"
 
