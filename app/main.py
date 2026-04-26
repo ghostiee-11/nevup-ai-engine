@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from app.memory.router import router as memory_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -25,3 +27,6 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 @app.get("/health")
 async def health():
     return {"status": "ok", "queue_lag": 0, "db": "ok"}
+
+
+app.include_router(memory_router)
