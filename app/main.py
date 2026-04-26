@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.memory.router import router as memory_router
+from app.profiling.router import router as profile_router
 
 
 @asynccontextmanager
@@ -30,3 +31,4 @@ async def health():
 
 
 app.include_router(memory_router)
+app.include_router(profile_router)
