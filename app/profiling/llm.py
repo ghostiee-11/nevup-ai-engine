@@ -80,7 +80,7 @@ async def narrate_profile(user_id: str, scored: list[dict], stats: dict) -> dict
         )
         response = await asyncio.to_thread(model.generate_content, json.dumps(payload, default=str))
         parsed = json.loads(response.text)
-    except (json.JSONDecodeError, Exception) as e:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001 -- LLM path must never break the rules-only fallback
         log.warning("LLM profile generation failed (%s) - falling back to rules-only", e)
         return _rules_only_profile(user_id, scored)
     parsed["userId"] = user_id  # never trust the LLM with this
