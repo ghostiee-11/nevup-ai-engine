@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
 from app.auth.deps import enforce_tenancy, require_user
 from app.memory import service
@@ -23,9 +23,9 @@ async def put_session_summary(
 @router.get("/{user_id}/context", response_model=ContextResponse)
 async def get_context(
     user_id: str,
-    relevant_to: str,
     request: Request,
-    limit: int = 5,
+    relevant_to: str = Query(..., min_length=1),
+    limit: int = Query(5, ge=1, le=50),
     user=Depends(require_user),
 ):
     enforce_tenancy(user, user_id, request)

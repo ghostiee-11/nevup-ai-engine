@@ -59,3 +59,21 @@ async def test_cross_tenant_returns_403(client, seeded_db):
         headers=_bearer(other),
     )
     assert r.status_code == 403
+
+
+@pytest.mark.integration
+async def test_context_rejects_empty_relevant_to(client, seeded_db):
+    r = await client.get(
+        f"/memory/{SEED_USER}/context?relevant_to=",
+        headers=_bearer(SEED_USER),
+    )
+    assert r.status_code == 422
+
+
+@pytest.mark.integration
+async def test_context_rejects_oversized_limit(client, seeded_db):
+    r = await client.get(
+        f"/memory/{SEED_USER}/context?relevant_to=anything&limit=10000",
+        headers=_bearer(SEED_USER),
+    )
+    assert r.status_code == 422
