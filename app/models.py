@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from pgvector.sqlalchemy import Vector
@@ -61,4 +61,6 @@ class SessionSummary(Base):
     metrics: Mapped[dict] = mapped_column(JSON)
     tags: Mapped[list] = mapped_column(JSON, default=list)
     embedding: Mapped[list] = mapped_column(Vector(settings.embedding_dim))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
