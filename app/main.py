@@ -6,7 +6,11 @@ from fastapi.responses import JSONResponse
 from app.audit.router import router as audit_router
 from app.coaching.router import router as coaching_router
 from app.memory.router import router as memory_router
+from app.observability.logging import configure_logging
+from app.observability.middleware import TracingMiddleware
 from app.profiling.router import router as profile_router
+
+configure_logging()
 
 
 @asynccontextmanager
@@ -15,6 +19,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="NevUp AI Engine", version="0.1.0", lifespan=lifespan)
+app.add_middleware(TracingMiddleware)
 
 
 @app.exception_handler(HTTPException)
