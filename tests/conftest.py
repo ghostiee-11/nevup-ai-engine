@@ -14,11 +14,14 @@ async def client():
 import pytest_asyncio
 from sqlalchemy import text
 
-from app.db import SessionLocal
+from app.db import SessionLocal, engine
 
 
 @pytest_asyncio.fixture
 async def db_clean():
+    # Dispose any pooled connections bound to a prior event loop so each
+    # test gets a fresh asyncpg connection on the current loop.
+    await engine.dispose()
     async with SessionLocal() as db:
         await db.execute(text(
             "TRUNCATE traders, sessions, trades, session_summaries RESTART IDENTITY CASCADE"
@@ -32,3 +35,12 @@ async def seeded_db(db_clean):
     from scripts.seed import seed
     await seed()
     yield
+
+
+from unittest.mock import AsyncMock, patch
+
+
+@pytest.fixture
+def patch_embed():
+    with patch("app.memory.service.embed", AsyncMock(return_value=[0.0] * 768)):
+        yield
