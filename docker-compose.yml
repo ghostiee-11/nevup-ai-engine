@@ -1,0 +1,37 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: nevup
+      POSTGRES_PASSWORD: nevup
+      POSTGRES_DB: nevup
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nevup -d nevup"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "5433:5432"  # host 5433 (5432 commonly occupied) -> container 5432
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://nevup:nevup@db:5432/nevup
+      JWT_SECRET: 97791d4db2aa5f689c3cc39356ce35762f0a73aa70923039d8ef72a2840a1b02
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      SEED_PATH: /data/nevup_seed_dataset.json
+      LOG_LEVEL: INFO
+    volumes:
+      - ./nevup_seed_dataset.json:/data/nevup_seed_dataset.json:ro
+      - ./nevup_seed_dataset.csv:/data/nevup_seed_dataset.csv:ro
+    ports:
+      - "8000:8000"
+
+volumes:
+  dbdata:
