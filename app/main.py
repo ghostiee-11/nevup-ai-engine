@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from app.coaching.router import router as coaching_router
 from app.memory.router import router as memory_router
 from app.profiling.router import router as profile_router
 
@@ -32,3 +33,4 @@ async def health():
 
 app.include_router(memory_router)
 app.include_router(profile_router)
+app.include_router(coaching_router)
