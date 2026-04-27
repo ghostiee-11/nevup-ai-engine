@@ -30,6 +30,11 @@ dev = [
   "ruff==0.6.9",
 ]
 
+# Pin packages explicitly so setuptools doesn't depend on flat-layout auto-discovery
+# (which fails when pyproject.toml is copied into a Docker layer before the source).
+[tool.setuptools]
+packages = ["app", "scripts"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 addopts = "-q"
