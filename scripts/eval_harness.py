@@ -1,6 +1,19 @@
-"""Run the rule-based profiler over all 10 traders and emit a sklearn classification report.
-Reviewers run this from scratch — it must be reproducible without API keys.
+"""Run the rule-based profiler against a labelled dataset and emit a
+sklearn classification report.
+
+Datasets:
+- `seed`: the original 10-trader fixture loaded from Postgres (requires DB).
+- `synthetic_test`: held-out 30 traders from data/synthetic_dataset.json.
+- `synthetic_full`: all 100 synthetic traders.
+- a path to any JSON file with the seed-schema shape (also accepts a `splits` field).
+
+Reviewers can run `python -m scripts.eval_harness --dataset seed` (DB-backed)
+or `python -m scripts.eval_harness --dataset data/synthetic_dataset.json --split test`
+without any API keys.
 """
+from __future__ import annotations
+
+import argparse
 import asyncio
 import json
 import logging
@@ -12,6 +25,7 @@ from sqlalchemy import select
 from app.db import SessionLocal
 from app.models import Trade, Trader
 from app.profiling.rules import score_pathologies
+from scripts.feature_extractor import trade_to_dict, trader_trades
 
 log = logging.getLogger("eval")
 
@@ -22,7 +36,7 @@ PATHOLOGIES = [
 ]
 
 
-def _trade_to_dict(t: Trade) -> dict:
+def _trade_row_to_dict(t: Trade) -> dict:
     return {
         "trade_id": t.trade_id, "user_id": t.user_id, "session_id": t.session_id,
         "asset": t.asset, "asset_class": t.asset_class, "direction": t.direction,
@@ -34,7 +48,7 @@ def _trade_to_dict(t: Trade) -> dict:
     }
 
 
-async def run() -> dict:
+async def _run_seed() -> tuple[list[str], list[str], list[dict]]:
     async with SessionLocal() as db:
         traders = (await db.execute(select(Trader))).scalars().all()
         per_user: dict[str, list[Trade]] = {}
@@ -47,7 +61,7 @@ async def run() -> dict:
     details: list[dict] = []
     for trader in traders:
         truth = trader.ground_truth_pathologies[0] if trader.ground_truth_pathologies else "none"
-        trades = [_trade_to_dict(t) for t in per_user.get(trader.user_id, [])]
+        trades = [_trade_row_to_dict(t) for t in per_user.get(trader.user_id, [])]
         scored = score_pathologies(trades) if trades else [{"pathology": "none", "score": 0.0}]
         top = scored[0]
         pred = top["pathology"] if top["score"] >= 0.3 else "none"
@@ -57,15 +71,73 @@ async def run() -> dict:
             "userId": trader.user_id, "name": trader.name,
             "truth": truth, "pred": pred, "topScore": top["score"],
         })
+    return y_true, y_pred, details
+
+
+def _run_json(path: Path, split: str | None = None) -> tuple[list[str], list[str], list[dict]]:
+    payload = json.loads(path.read_text())
+    traders = payload["traders"]
+    if split and "splits" in payload:
+        ids = set(payload["splits"][split])
+        traders = [t for t in traders if t["userId"] in ids]
+
+    y_true: list[str] = []
+    y_pred: list[str] = []
+    details: list[dict] = []
+    for trader in traders:
+        truth = trader["groundTruthPathologies"][0] if trader["groundTruthPathologies"] else "none"
+        trades = trader_trades(trader)
+        scored = score_pathologies(trades) if trades else [{"pathology": "none", "score": 0.0}]
+        top = scored[0]
+        pred = top["pathology"] if top["score"] >= 0.3 else "none"
+        y_true.append(truth)
+        y_pred.append(pred)
+        details.append({
+            "userId": trader["userId"], "name": trader.get("name"),
+            "truth": truth, "pred": pred, "topScore": top["score"],
+        })
+    return y_true, y_pred, details
+
+
+async def run(dataset: str = "seed", split: str | None = None) -> dict:
+    if dataset == "seed":
+        y_true, y_pred, details = await _run_seed()
+        out_name = "report.json"
+    elif dataset == "synthetic_test":
+        y_true, y_pred, details = _run_json(Path("data/synthetic_dataset.json"), split="test")
+        out_name = "holdout_report.json"
+    elif dataset == "synthetic_full":
+        y_true, y_pred, details = _run_json(Path("data/synthetic_dataset.json"))
+        out_name = "synthetic_report.json"
+    else:
+        # treat as a path
+        y_true, y_pred, details = _run_json(Path(dataset), split=split)
+        out_name = "custom_report.json"
 
     report = classification_report(y_true, y_pred, labels=PATHOLOGIES, zero_division=0, output_dict=True)
-    out = {"report": report, "details": details, "y_true": y_true, "y_pred": y_pred}
+    out = {
+        "dataset": dataset,
+        "split": split,
+        "report": report,
+        "details": details,
+        "y_true": y_true,
+        "y_pred": y_pred,
+    }
     Path("eval").mkdir(exist_ok=True)
-    Path("eval/report.json").write_text(json.dumps(out, indent=2))
+    Path(f"eval/{out_name}").write_text(json.dumps(out, indent=2))
     return out
 
 
-if __name__ == "__main__":
+def main() -> None:
+    p = argparse.ArgumentParser()
+    p.add_argument("--dataset", default="seed",
+                   help="'seed', 'synthetic_test', 'synthetic_full', or a JSON path")
+    p.add_argument("--split", default=None, help="train|test (when --dataset is a JSON path)")
+    args = p.parse_args()
     logging.basicConfig(level=logging.INFO)
-    out = asyncio.run(run())
+    out = asyncio.run(run(dataset=args.dataset, split=args.split))
     print(json.dumps(out["report"], indent=2))
+
+
+if __name__ == "__main__":
+    main()

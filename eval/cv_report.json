@@ -1,0 +1,41 @@
+{
+  "dataset": "data/synthetic_dataset.json",
+  "folds": 5,
+  "seed": 42,
+  "bootstrap_n": 1000,
+  "fold_results": [
+    {
+      "fold": 0,
+      "n": 20,
+      "macro_f1": 1.0
+    },
+    {
+      "fold": 1,
+      "n": 20,
+      "macro_f1": 1.0
+    },
+    {
+      "fold": 2,
+      "n": 20,
+      "macro_f1": 0.9467
+    },
+    {
+      "fold": 3,
+      "n": 20,
+      "macro_f1": 1.0
+    },
+    {
+      "fold": 4,
+      "n": 20,
+      "macro_f1": 0.9467
+    }
+  ],
+  "macro_f1": {
+    "fold_mean": 0.9787,
+    "fold_std": 0.0261,
+    "bootstrap_p2_5": 0.9437,
+    "bootstrap_median": 0.98,
+    "bootstrap_p97_5": 1.0
+  },
+  "n_traders": 100
+}

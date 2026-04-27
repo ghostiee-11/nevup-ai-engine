@@ -1,0 +1,355 @@
+{
+  "dataset": "synthetic_test",
+  "split": null,
+  "report": {
+    "revenge_trading": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "overtrading": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "fomo_entries": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "plan_non_adherence": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "premature_exit": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "loss_running": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "session_tilt": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "time_of_day_bias": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "position_sizing_inconsistency": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "none": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    }
+  },
+  "details": [
+    {
+      "userId": "4eea04e7-0ab5-4bde-a0a0-45026e068097",
+      "name": "Lane Zito",
+      "truth": "revenge_trading",
+      "pred": "revenge_trading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "cb8383f2-bb96-4602-ab11-5c3675f8e3a8",
+      "name": "Lane Foley",
+      "truth": "revenge_trading",
+      "pred": "revenge_trading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "4e40bfba-a8cf-4589-9dc8-9e1a540e7d01",
+      "name": "Sage Ellis",
+      "truth": "revenge_trading",
+      "pred": "revenge_trading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "6e5fbf71-9749-42b0-b1ad-e82ad05cc78d",
+      "name": "Noor Soto",
+      "truth": "overtrading",
+      "pred": "overtrading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "9b5ad674-8896-44b2-8e92-605915ab7cd2",
+      "name": "Kerry Marsh",
+      "truth": "overtrading",
+      "pred": "overtrading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "428f54aa-c1c9-4ab6-bea6-85f6c0a40088",
+      "name": "Kerry Jain",
+      "truth": "overtrading",
+      "pred": "overtrading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "1564b478-8d62-4ba6-89fc-17cf3dd29956",
+      "name": "Kerry Quist",
+      "truth": "fomo_entries",
+      "pred": "fomo_entries",
+      "topScore": 1.0
+    },
+    {
+      "userId": "c742bbaf-7787-4d52-9d12-bbc65eaae175",
+      "name": "Morgan Wei",
+      "truth": "fomo_entries",
+      "pred": "fomo_entries",
+      "topScore": 1.0
+    },
+    {
+      "userId": "b2c4606b-8381-423f-a92f-aba1a6d50103",
+      "name": "Gray Doyle",
+      "truth": "fomo_entries",
+      "pred": "fomo_entries",
+      "topScore": 1.0
+    },
+    {
+      "userId": "a0db05fa-4758-4609-b2d2-2f14af3ae9ef",
+      "name": "Avery Vega",
+      "truth": "plan_non_adherence",
+      "pred": "plan_non_adherence",
+      "topScore": 1.0
+    },
+    {
+      "userId": "3bc1c038-f4ea-4d5d-bdbf-4e1cc14988c8",
+      "name": "Cameron Ito",
+      "truth": "plan_non_adherence",
+      "pred": "plan_non_adherence",
+      "topScore": 1.0
+    },
+    {
+      "userId": "b82bb912-0aab-4482-9eaa-3d0979fb464e",
+      "name": "Kerry Adler",
+      "truth": "plan_non_adherence",
+      "pred": "plan_non_adherence",
+      "topScore": 1.0
+    },
+    {
+      "userId": "cd6f0c98-38c8-4b7c-a396-a6331d6b5978",
+      "name": "Gray Nakamura",
+      "truth": "premature_exit",
+      "pred": "premature_exit",
+      "topScore": 0.8162
+    },
+    {
+      "userId": "f782b24b-1584-46bf-955d-ddac99e0859c",
+      "name": "Tatum Underwood",
+      "truth": "premature_exit",
+      "pred": "premature_exit",
+      "topScore": 0.8789
+    },
+    {
+      "userId": "e9bce624-b1c8-4325-ad75-5a78c36ad335",
+      "name": "Ellis Ito",
+      "truth": "premature_exit",
+      "pred": "premature_exit",
+      "topScore": 0.8789
+    },
+    {
+      "userId": "7fdcadde-6e65-4f53-abcf-1d4ebf023ce0",
+      "name": "Harper Gomez",
+      "truth": "loss_running",
+      "pred": "loss_running",
+      "topScore": 1.0
+    },
+    {
+      "userId": "24176169-10aa-499c-96cc-39dd29cc8ab0",
+      "name": "Blair Gomez",
+      "truth": "loss_running",
+      "pred": "loss_running",
+      "topScore": 1.0
+    },
+    {
+      "userId": "8c9da802-759c-4c8f-958e-152dc6edd12d",
+      "name": "Noor Quist",
+      "truth": "loss_running",
+      "pred": "loss_running",
+      "topScore": 1.0
+    },
+    {
+      "userId": "f02e9e71-54b9-461d-b173-6c9a2ba80442",
+      "name": "Reese Jain",
+      "truth": "session_tilt",
+      "pred": "session_tilt",
+      "topScore": 1.0
+    },
+    {
+      "userId": "ee1d1945-a381-42d5-9897-2febfd8f6988",
+      "name": "Avery Nakamura",
+      "truth": "session_tilt",
+      "pred": "session_tilt",
+      "topScore": 1.0
+    },
+    {
+      "userId": "bc679ccb-3d03-4a63-b324-d1282fafff42",
+      "name": "Dakota Quist",
+      "truth": "session_tilt",
+      "pred": "session_tilt",
+      "topScore": 1.0
+    },
+    {
+      "userId": "7a2b02d9-a06c-4562-9e5b-c2a556b71e2a",
+      "name": "Ellis Nakamura",
+      "truth": "time_of_day_bias",
+      "pred": "time_of_day_bias",
+      "topScore": 0.75
+    },
+    {
+      "userId": "d7cc2646-f3cc-44e5-ba94-3e45207e73da",
+      "name": "Blair Underwood",
+      "truth": "time_of_day_bias",
+      "pred": "time_of_day_bias",
+      "topScore": 0.75
+    },
+    {
+      "userId": "a2954ea0-f35f-475f-82bb-7a10348ea61e",
+      "name": "Sage Zito",
+      "truth": "time_of_day_bias",
+      "pred": "time_of_day_bias",
+      "topScore": 0.75
+    },
+    {
+      "userId": "c358d1fb-178c-406b-bead-0a47d0814483",
+      "name": "Parker Yamada",
+      "truth": "position_sizing_inconsistency",
+      "pred": "position_sizing_inconsistency",
+      "topScore": 0.5475
+    },
+    {
+      "userId": "3ccb9d66-ee0d-466b-a568-50123ef8cc0f",
+      "name": "Morgan Blake",
+      "truth": "position_sizing_inconsistency",
+      "pred": "position_sizing_inconsistency",
+      "topScore": 0.5475
+    },
+    {
+      "userId": "aef30f89-c232-4358-94fe-120093f2ea4d",
+      "name": "Parker Tran",
+      "truth": "position_sizing_inconsistency",
+      "pred": "position_sizing_inconsistency",
+      "topScore": 0.5475
+    },
+    {
+      "userId": "5aee060c-5c54-4245-9fbe-f031a618130e",
+      "name": "Tatum Tran",
+      "truth": "none",
+      "pred": "none",
+      "topScore": 0.0
+    },
+    {
+      "userId": "f3944619-5596-406c-9c13-dc8a9562b6d9",
+      "name": "Parker Gomez",
+      "truth": "none",
+      "pred": "none",
+      "topScore": 0.1026
+    },
+    {
+      "userId": "4ddb98de-7e35-4431-92e9-816c63cc975a",
+      "name": "Oakley Soto",
+      "truth": "none",
+      "pred": "none",
+      "topScore": 0.0
+    }
+  ],
+  "y_true": [
+    "revenge_trading",
+    "revenge_trading",
+    "revenge_trading",
+    "overtrading",
+    "overtrading",
+    "overtrading",
+    "fomo_entries",
+    "fomo_entries",
+    "fomo_entries",
+    "plan_non_adherence",
+    "plan_non_adherence",
+    "plan_non_adherence",
+    "premature_exit",
+    "premature_exit",
+    "premature_exit",
+    "loss_running",
+    "loss_running",
+    "loss_running",
+    "session_tilt",
+    "session_tilt",
+    "session_tilt",
+    "time_of_day_bias",
+    "time_of_day_bias",
+    "time_of_day_bias",
+    "position_sizing_inconsistency",
+    "position_sizing_inconsistency",
+    "position_sizing_inconsistency",
+    "none",
+    "none",
+    "none"
+  ],
+  "y_pred": [
+    "revenge_trading",
+    "revenge_trading",
+    "revenge_trading",
+    "overtrading",
+    "overtrading",
+    "overtrading",
+    "fomo_entries",
+    "fomo_entries",
+    "fomo_entries",
+    "plan_non_adherence",
+    "plan_non_adherence",
+    "plan_non_adherence",
+    "premature_exit",
+    "premature_exit",
+    "premature_exit",
+    "loss_running",
+    "loss_running",
+    "loss_running",
+    "session_tilt",
+    "session_tilt",
+    "session_tilt",
+    "time_of_day_bias",
+    "time_of_day_bias",
+    "time_of_day_bias",
+    "position_sizing_inconsistency",
+    "position_sizing_inconsistency",
+    "position_sizing_inconsistency",
+    "none",
+    "none",
+    "none"
+  ]
+}

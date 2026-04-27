@@ -1,0 +1,203 @@
+{
+  "baseline": {
+    "train_macro_f1": 0.9708,
+    "test_macro_f1": 1.0
+  },
+  "tuned_thresholds": {
+    "revenge_trading": {
+      "denom_factor": 0.2
+    },
+    "overtrading": {
+      "max_in_30min": 10,
+      "events_multiplier": 0.4,
+      "excess_multiplier": 0.05
+    },
+    "fomo_entries": {
+      "greedy_dominance_min": 0.6,
+      "score_multiplier": 1.2
+    },
+    "plan_non_adherence": {
+      "loss_rate_min": 0.15,
+      "ratio_subtract": 0.15,
+      "score_multiplier": 2.0
+    },
+    "premature_exit": {
+      "win_rate_min": 0.7,
+      "quick_minutes_max": 10,
+      "quick_ratio_to_wins_min": 0.5,
+      "score_multiplier": 1.2
+    },
+    "loss_running": {
+      "min_losses": 5,
+      "very_long_hours": 2,
+      "ratio_subtract": 0.4,
+      "score_multiplier": 2.5
+    },
+    "session_tilt": {
+      "min_loss_rate": 0.5,
+      "min_session_trades": 3,
+      "loss_following_min": 0.5,
+      "anxious_ratio_min": 0.5
+    },
+    "time_of_day_bias": {
+      "min_total_trades": 10,
+      "min_trades_per_hour": 3,
+      "loss_rate_min": 0.7,
+      "max_bad_ratio": 0.65,
+      "score_multiplier": 1.5
+    },
+    "position_sizing_inconsistency": {
+      "min_trades_per_class": 3,
+      "max_cv_min": 0.85,
+      "score_subtract": 0.5
+    }
+  },
+  "deltas": [
+    {
+      "pathology": "revenge_trading",
+      "param": "denom_factor",
+      "from": 0.2,
+      "to": 0.2,
+      "train_macro_f1_after": 0.9708
+    },
+    {
+      "pathology": "overtrading",
+      "param": "events_multiplier",
+      "from": 0.4,
+      "to": 0.4,
+      "train_macro_f1_after": 0.9708
+    },
+    {
+      "pathology": "fomo_entries",
+      "param": "greedy_dominance_min",
+      "from": 0.6,
+      "to": 0.6,
+      "train_macro_f1_after": 0.9708
+    },
+    {
+      "pathology": "plan_non_adherence",
+      "param": "ratio_subtract",
+      "from": 0.1,
+      "to": 0.15,
+      "train_macro_f1_after": 1.0
+    },
+    {
+      "pathology": "premature_exit",
+      "param": "win_rate_min",
+      "from": 0.7,
+      "to": 0.7,
+      "train_macro_f1_after": 1.0
+    },
+    {
+      "pathology": "loss_running",
+      "param": "ratio_subtract",
+      "from": 0.4,
+      "to": 0.4,
+      "train_macro_f1_after": 1.0
+    },
+    {
+      "pathology": "session_tilt",
+      "param": "anxious_ratio_min",
+      "from": 0.5,
+      "to": 0.5,
+      "train_macro_f1_after": 1.0
+    },
+    {
+      "pathology": "time_of_day_bias",
+      "param": "loss_rate_min",
+      "from": 0.7,
+      "to": 0.7,
+      "train_macro_f1_after": 1.0
+    },
+    {
+      "pathology": "position_sizing_inconsistency",
+      "param": "max_cv_min",
+      "from": 0.85,
+      "to": 0.85,
+      "train_macro_f1_after": 1.0
+    }
+  ],
+  "final": {
+    "train_macro_f1": 1.0,
+    "test_macro_f1": 1.0,
+    "test_classification_report": {
+      "revenge_trading": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "overtrading": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "fomo_entries": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "plan_non_adherence": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "premature_exit": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "loss_running": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "session_tilt": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "time_of_day_bias": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "position_sizing_inconsistency": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "none": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 3.0
+      },
+      "accuracy": 1.0,
+      "macro avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 30.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 30.0
+      }
+    }
+  },
+  "splits": {
+    "train_n": 70,
+    "test_n": 30
+  }
+}
