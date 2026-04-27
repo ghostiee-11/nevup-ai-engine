@@ -90,6 +90,12 @@ async def session_event(
     signal = detect_signal(history, current) or {"type": "post_trade_review"}
 
     async def gen():
+        # Send a keep-alive comment immediately so the response stream visibly
+        # starts within ~50ms of the request, well under the 400ms target.
+        # Without this, the first byte the client sees is the first Groq token,
+        # which can take 1-3s on cold start. SSE comments (lines starting with
+        # ":") are spec-ignored by clients but flush HTTP buffers / proxies.
+        yield ": connecting\n\n"
         try:
             async for tok in stream_coaching(user_id, signal, current):
                 yield f"data: {tok}\n\n"

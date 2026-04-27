@@ -86,7 +86,11 @@ export async function streamSSE(
           .split("\n")
           .find((l) => l.startsWith("data:"));
         if (!dataLine) continue;
-        const payload = dataLine.slice(5).trimStart();
+        // SSE spec: strip EXACTLY one optional space after the colon.
+        // .trimStart() would strip meaningful leading spaces from token deltas
+        // like " see", " you've", causing concatenated output ("Iseeyou've...").
+        let payload = dataLine.slice(5);
+        if (payload.startsWith(" ")) payload = payload.slice(1);
         if (payload === "[DONE]") {
           handlers.onDone();
           return;
