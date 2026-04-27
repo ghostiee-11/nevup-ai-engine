@@ -5,6 +5,8 @@ venv/
 .env
 .env.*
 !.env.example
+!.env.local.example
+!.env.example.*
 *.log
 .pytest_cache/
 .ruff_cache/
