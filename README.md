@@ -12,20 +12,24 @@
 [![Tests](https://img.shields.io/badge/tests-37%20passed-success)]()
 [![Docker compose up](https://img.shields.io/badge/zero--step-docker%20compose%20up-2496ED?logo=docker&logoColor=white)]()
 
-```
-        ┌──────────┐    ┌──────────────┐    ┌──────────────────┐
-trade ─►│ /session │ ─► │ detect_signal│ ─► │  Groq stream    │ ─►  SSE tokens
-events  │  /events │    │  (rule-based) │    │ (system+context) │     to client
-        └──────────┘    └──────────────┘    └──────────────────┘
-              │                                       │
-              ▼                                       ▼
-        ┌─────────────────────┐                ┌──────────────┐
-        │  pgvector memory    │ ◄─ retrieval ─ │ /memory      │
-        │  (session_summaries)│                │ /context     │
-        └─────────────────────┘                └──────────────┘
-```
-
 </div>
+
+```mermaid
+flowchart LR
+    T(["closed&nbsp;trade"]):::evt --> EP["POST /session/events"]:::route
+    EP --> DET[["detect_signal<br/>deterministic, ~ms"]]:::rule
+    DET --> LLM[["Groq stream<br/>Llama 3.3 70B"]]:::llm
+    LLM -. SSE tokens .-> CLI(["client"]):::evt
+    DB[("Postgres<br/>+ pgvector")]:::db --- DET
+    DB --- LLM
+    MEM["/memory/context"]:::route --- DB
+
+    classDef evt fill:#e0e7ff,stroke:#4338ca,color:#1e1b4b,stroke-width:2px
+    classDef route fill:#dbeafe,stroke:#1d4ed8,color:#0c4a6e,stroke-width:2px
+    classDef rule fill:#dcfce7,stroke:#15803d,color:#14532d,stroke-width:2px
+    classDef llm fill:#fed7aa,stroke:#c2410c,color:#7c2d12,stroke-width:2px
+    classDef db fill:#fef3c7,stroke:#a16207,color:#451a03,stroke-width:2px
+```
 
 ---
 
