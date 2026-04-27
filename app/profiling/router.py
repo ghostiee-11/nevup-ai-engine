@@ -42,5 +42,13 @@ async def get_profile(user_id: str, request: Request, user=Depends(require_user)
         "sessions": len({t["session_id"] for t in trades}),
         "avg_plan_adherence": round(sum(rated) / len(rated), 2) if rated else None,
     }
+    # Multi-label set: every pathology with score >= 0.3. Real traders combine
+    # patterns; the legacy `profile.primaryPathology` (top-1) is preserved for
+    # backward-compatible clients but new consumers should use this list.
+    primary_pathologies = [s["pathology"] for s in scored if s["score"] >= 0.3]
     profile = await narrate_profile(user_id, scored, stats)
-    return {"profile": profile, "scored": scored}
+    return {
+        "profile": profile,
+        "scored": scored,
+        "primary_pathologies": primary_pathologies,
+    }

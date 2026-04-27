@@ -30,6 +30,10 @@ async def test_profile_revenge_trader(client, seeded_db):
     assert len(top["evidence"]) > 0
     for c in top["evidence"]:
         assert "trade_id" in c or "session_id" in c
+    # Multi-label exposure: primary_pathologies is a list (may include
+    # secondary patterns when their score crosses the 0.3 threshold).
+    assert isinstance(body["primary_pathologies"], list)
+    assert "revenge_trading" in body["primary_pathologies"]
 
 
 @pytest.mark.integration
@@ -40,3 +44,4 @@ async def test_profile_overtrading_trader(client, seeded_db):
     assert r.status_code == 200
     body = r.json()
     assert body["scored"][0]["pathology"] == "overtrading"
+    assert "overtrading" in body["primary_pathologies"]

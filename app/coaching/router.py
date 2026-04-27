@@ -8,7 +8,7 @@ from sqlalchemy import select
 from app.auth.deps import enforce_tenancy, require_user
 from app.coaching.intervention import stream_coaching
 from app.db import SessionLocal
-from app.metrics.behavioral import detect_signal
+from app.metrics.behavioral import detect_signals
 from app.models import Trade
 
 router = APIRouter(prefix="/session", tags=["coaching"])
@@ -87,7 +87,9 @@ async def session_event(
         )).scalars().all()
     history = [_trade_row_to_history_dict(r) for r in rows]
 
-    signal = detect_signal(history, current) or {"type": "post_trade_review"}
+    signals = detect_signals(history, current)
+    if not signals:
+        signals = [{"type": "post_trade_review"}]
 
     async def gen():
         # Send a keep-alive comment immediately so the response stream visibly
@@ -97,7 +99,7 @@ async def session_event(
         # ":") are spec-ignored by clients but flush HTTP buffers / proxies.
         yield ": connecting\n\n"
         try:
-            async for tok in stream_coaching(user_id, signal, current):
+            async for tok in stream_coaching(user_id, signals, current):
                 yield f"data: {tok}\n\n"
         except Exception as e:  # noqa: BLE001 -- never let coaching errors leave the SSE stream open
             yield f"event: error\ndata: {type(e).__name__}\n\n"

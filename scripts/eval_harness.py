@@ -19,7 +19,13 @@ import json
 import logging
 from pathlib import Path
 
-from sklearn.metrics import classification_report
+from sklearn.metrics import (
+    classification_report,
+    f1_score,
+    hamming_loss,
+    precision_recall_fscore_support,
+)
+from sklearn.preprocessing import MultiLabelBinarizer
 from sqlalchemy import select
 
 from app.db import SessionLocal
@@ -128,15 +134,85 @@ async def run(dataset: str = "seed", split: str | None = None) -> dict:
     return out
 
 
+def run_multi_label(path: Path, score_threshold: float = 0.3) -> dict:
+    """Multi-label evaluation: predict the set of pathologies with score >= threshold,
+    compare against the trader's full ground-truth set. Reports subset accuracy,
+    Hamming loss, and per-class precision/recall/F1.
+    """
+    payload = json.loads(path.read_text())
+    traders = payload["traders"]
+    label_classes = [
+        "revenge_trading", "overtrading", "fomo_entries", "plan_non_adherence",
+        "premature_exit", "loss_running", "session_tilt", "time_of_day_bias",
+        "position_sizing_inconsistency",
+    ]
+    mlb = MultiLabelBinarizer(classes=label_classes)
+
+    y_true_sets: list[list[str]] = []
+    y_pred_sets: list[list[str]] = []
+    details: list[dict] = []
+    for trader in traders:
+        truth = list(trader.get("groundTruthPathologies") or [])
+        trades = trader_trades(trader)
+        scored = score_pathologies(trades) if trades else []
+        pred = [s["pathology"] for s in scored if s["score"] >= score_threshold]
+        y_true_sets.append(truth)
+        y_pred_sets.append(pred)
+        details.append({
+            "userId": trader["userId"],
+            "name": trader.get("name"),
+            "truth": truth,
+            "pred": pred,
+            "subset_match": set(truth) == set(pred),
+        })
+
+    y_true_bin = mlb.fit_transform(y_true_sets)
+    y_pred_bin = mlb.transform(y_pred_sets)
+
+    subset_acc = sum(1 for d in details if d["subset_match"]) / len(details)
+    h_loss = hamming_loss(y_true_bin, y_pred_bin)
+    macro_f1 = f1_score(y_true_bin, y_pred_bin, average="macro", zero_division=0)
+    micro_f1 = f1_score(y_true_bin, y_pred_bin, average="micro", zero_division=0)
+    p, r, f, s = precision_recall_fscore_support(
+        y_true_bin, y_pred_bin, labels=list(range(len(label_classes))), zero_division=0,
+    )
+    per_class = {
+        cls: {"precision": round(p[i], 4), "recall": round(r[i], 4), "f1": round(f[i], 4), "support": int(s[i])}
+        for i, cls in enumerate(label_classes)
+    }
+
+    out = {
+        "dataset": str(path),
+        "score_threshold": score_threshold,
+        "n_traders": len(traders),
+        "subset_accuracy": round(subset_acc, 4),
+        "hamming_loss": round(h_loss, 4),
+        "macro_f1": round(macro_f1, 4),
+        "micro_f1": round(micro_f1, 4),
+        "per_class": per_class,
+        "details": details,
+    }
+    Path("eval").mkdir(exist_ok=True)
+    Path("eval/multi_label_report.json").write_text(json.dumps(out, indent=2))
+    return out
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--dataset", default="seed",
                    help="'seed', 'synthetic_test', 'synthetic_full', or a JSON path")
     p.add_argument("--split", default=None, help="train|test (when --dataset is a JSON path)")
+    p.add_argument("--multi-label", action="store_true",
+                   help="multi-label mode: predict ALL pathologies above threshold per trader")
+    p.add_argument("--score-threshold", type=float, default=0.3)
     args = p.parse_args()
     logging.basicConfig(level=logging.INFO)
-    out = asyncio.run(run(dataset=args.dataset, split=args.split))
-    print(json.dumps(out["report"], indent=2))
+    if args.multi_label:
+        out = run_multi_label(Path(args.dataset), score_threshold=args.score_threshold)
+        print(json.dumps({k: v for k, v in out.items() if k != "details"}, indent=2))
+    else:
+        out = asyncio.run(run(dataset=args.dataset, split=args.split))
+        print(json.dumps(out["report"], indent=2))
 
 
 if __name__ == "__main__":

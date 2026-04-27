@@ -75,18 +75,41 @@ def overtrading_window_violations(trades: list[dict], *, max_in_30min: int = 10)
     return events
 
 
-def detect_signal(prev_trades: list[dict], current: dict) -> dict | None:
-    """Pick the most relevant active signal for a freshly closed trade.
-    Used by /session/events to choose the coaching context.
+def detect_signals(prev_trades: list[dict], current: dict) -> list[dict]:
+    """Return all active behavioral signals for a freshly closed trade, ordered
+    by priority (revenge_trade ≻ overtrading ≻ plan_non_adherence ≻ greedy_fomo).
+
+    Multiple signals can co-fire; the coaching layer addresses each in priority
+    order. Empty list means no flag — caller should fall through to a generic
+    post-trade review.
     """
-    if not prev_trades:
-        return None
-    last = prev_trades[-1]
-    if revenge_flag(prev=last, current=current):
-        return {"type": "revenge_trade", "trade_id": current["trade_id"]}
-    overtrading = overtrading_window_violations(prev_trades + [current])
-    if overtrading:
-        return {"type": "overtrading", **overtrading[-1]}
-    if current.get("plan_adherence") is not None and current["plan_adherence"] <= 2:
-        return {"type": "plan_non_adherence", "trade_id": current["trade_id"]}
-    return None
+    signals: list[dict] = []
+    if not prev_trades and current.get("plan_adherence", 5) <= 2:
+        signals.append({"type": "plan_non_adherence", "trade_id": current["trade_id"]})
+    if prev_trades:
+        last = prev_trades[-1]
+        if revenge_flag(prev=last, current=current):
+            signals.append({"type": "revenge_trade", "trade_id": current["trade_id"]})
+        overtrading = overtrading_window_violations(prev_trades + [current])
+        if overtrading:
+            signals.append({"type": "overtrading", **overtrading[-1]})
+        if current.get("plan_adherence") is not None and current["plan_adherence"] <= 2:
+            sig = {"type": "plan_non_adherence", "trade_id": current["trade_id"]}
+            if sig not in signals:
+                signals.append(sig)
+    if (
+        current.get("emotional_state") == "greedy"
+        and current.get("plan_adherence") is not None
+        and current["plan_adherence"] <= 2
+    ):
+        signals.append({"type": "fomo_entry", "trade_id": current["trade_id"]})
+    return signals
+
+
+def detect_signal(prev_trades: list[dict], current: dict) -> dict | None:
+    """DEPRECATED — kept for backward compatibility. Returns the highest-priority
+    signal from `detect_signals`, or None when no signal fires. Will be removed
+    in v0.3 once all callers migrate to `detect_signals`.
+    """
+    sigs = detect_signals(prev_trades, current)
+    return sigs[0] if sigs else None
