@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.audit.router import router as audit_router
@@ -19,7 +20,20 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="NevUp AI Engine", version="0.1.0", lifespan=lifespan)
+# TracingMiddleware is added first → ends up innermost (runs after CORS).
 app.add_middleware(TracingMiddleware)
+# CORS added last → outermost → handles preflight before any other middleware.
+# allow_credentials=False is required when allow_origins=["*"] (per CORS spec).
+# This service uses bearer JWTs in the Authorization header, not cookies, so no creds needed.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Trace-Id"],
+    expose_headers=["X-Trace-Id"],
+    max_age=600,
+)
 
 
 @app.exception_handler(HTTPException)
