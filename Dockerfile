@@ -17,5 +17,9 @@ COPY scripts/ ./scripts/
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
+# Bake the seed dataset into the image so deploys (Render, Fly, etc.) don't need a volume mount.
+RUN mkdir -p /data
+COPY nevup_seed_dataset.json /data/nevup_seed_dataset.json
+
 EXPOSE 8000
 CMD ["./entrypoint.sh"]

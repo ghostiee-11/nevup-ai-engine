@@ -1,0 +1,21 @@
+# Defense in depth — keep secrets and local cruft out of the build context.
+.env
+.env.*
+!.env.example
+.git
+.github
+.venv
+venv
+.pytest_cache
+.ruff_cache
+.coverage
+__pycache__
+*.pyc
+*.egg-info
+docs
+eval/report.json
+tests
+README.md
+DECISIONS.md
+NevUp Hackathon 2026 KickOff Deck.pdf
+nevup_seed_dataset.csv

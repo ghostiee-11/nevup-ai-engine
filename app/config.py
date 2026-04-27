@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +15,15 @@ class Settings(BaseSettings):
     embedding_dim: int = 768
     seed_path: str = "/data/nevup_seed_dataset.json"
     log_level: str = "INFO"
+
+    @field_validator("database_url", mode="after")
+    @classmethod
+    def coerce_async_driver(cls, v: str) -> str:
+        # Render and most managed Postgres hosts hand out libpq-style URLs
+        # (postgresql://...), but SQLAlchemy async needs the +asyncpg driver prefix.
+        if v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
 
 settings = Settings()

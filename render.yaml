@@ -1,0 +1,43 @@
+# Render Blueprint — provisions the API + Postgres in one click.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Usage:
+#   1. Push this repo to GitHub (public).
+#   2. On Render: New + → Blueprint → connect repo → Render reads this file.
+#   3. Set the three "sync: false" env vars in the Render dashboard:
+#        JWT_SECRET, GEMINI_API_KEY, GROQ_API_KEY
+#   4. After deploy, copy the API URL into the GitHub repo variable
+#      RENDER_API_URL (Settings → Secrets and variables → Actions → Variables)
+#      so the keep-alive cron can hit /health every 10 minutes.
+
+services:
+  - type: web
+    name: nevup-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nevup-db
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false  # set in Render dashboard
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SEED_PATH
+        value: /data/nevup_seed_dataset.json
+      - key: LOG_LEVEL
+        value: INFO
+
+databases:
+  - name: nevup-db
+    plan: free
+    region: oregon
+    postgresMajorVersion: "16"
+    # pgvector extension is created by alembic migration 0001_initial on first boot.

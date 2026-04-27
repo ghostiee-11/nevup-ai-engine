@@ -1,0 +1,36 @@
+name: Keep Render API warm
+
+# Render's free Web Service plan spins down after 15 min of inactivity (~30s cold start).
+# This workflow pings /health every ~10 minutes so the instance stays warm during demos.
+# GitHub Actions cron is best-effort and may delay by a few minutes — that's fine,
+# 10 min interval gives a comfortable buffer under the 15 min spin-down threshold.
+#
+# Setup:
+#   1. Deploy the API on Render (see render.yaml).
+#   2. Copy the public URL (e.g., https://nevup-api.onrender.com).
+#   3. Add it as a repository variable: Settings → Secrets and variables → Actions
+#      → Variables tab → New repository variable → name: RENDER_API_URL
+#
+# Without RENDER_API_URL set, the workflow no-ops gracefully so it doesn't
+# spam failure notifications before the deploy is live.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit /health
+        run: |
+          URL="${{ vars.RENDER_API_URL }}"
+          if [ -z "$URL" ]; then
+            echo "RENDER_API_URL repo variable not set — no-op."
+            exit 0
+          fi
+          # Single retry in case Render is just spinning back up.
+          curl -fsS --max-time 30 "$URL/health" \
+            || (sleep 8 && curl -fsS --max-time 30 "$URL/health")
+          echo "  health ok"
