@@ -46,6 +46,25 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
+@app.get("/")
+async def root():
+    return {
+        "service": "NevUp AI Engine",
+        "version": "0.1.0",
+        "ui": "https://nevup-ui.vercel.app",
+        "docs": "/docs",
+        "health": "/health",
+        "endpoints": [
+            "GET /profile/{userId}",
+            "PUT /memory/{userId}/sessions/{sessionId}",
+            "GET /memory/{userId}/context?relevant_to=...",
+            "GET /memory/{userId}/sessions/{sessionId}",
+            "POST /session/events?user_id=...",
+            "POST /audit",
+        ],
+    }
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok", "queue_lag": 0, "db": "ok"}
