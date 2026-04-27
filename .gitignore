@@ -20,3 +20,5 @@ build/
 .playwright-mcp/
 *.png
 !docs/**/*.png
+data/*.json
+!data/sample_synthetic_dataset.json
