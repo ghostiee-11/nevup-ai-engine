@@ -70,6 +70,14 @@ async def health():
     return {"status": "ok", "queue_lag": 0, "db": "ok"}
 
 
+@app.get("/metrics")
+async def metrics():
+    """JSON-encoded ops metrics: request counters, latency histogram, embed fallback
+    rates, uptime. Unauthenticated by design — bind to internal in production."""
+    from app.observability.metrics import all_metrics
+    return all_metrics()
+
+
 app.include_router(memory_router)
 app.include_router(profile_router)
 app.include_router(coaching_router)

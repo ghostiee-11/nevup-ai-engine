@@ -39,6 +39,7 @@ flowchart LR
 - [🚀 Quickstart](#-quickstart)
 - [📊 What the eval shows — and what it doesn't](#-what-the-eval-shows--and-what-it-doesnt)
 - [⚠️ Known limitations](#️-known-limitations)
+- [📈 Performance — measured under load](#-performance--measured-under-load)
 - [🌐 API reference](#-api-reference)
 - [🧪 Live demos (copy-paste-able)](#-live-demos-copy-paste-able)
 - [🏗️ Architecture](#️-architecture)
@@ -167,6 +168,29 @@ See [⚠️ Known limitations](#️-known-limitations) for the honest list of wh
 | **No load test for /session/events** | — | Add k6 or Locust script |
 | **Position sizing CV is per-asset-class, not per-equity-fraction** | [app/profiling/rules.py](./app/profiling/rules.py) | Real position sizing should be normalised against account equity, not raw quantity |
 | **Single-language LLM** | — | Coaching prompt assumes English. International users would need locale-aware prompts |
+
+---
+
+## 📈 Performance — measured under load
+
+Headline numbers from the k6 load test ([`loadtest/k6_session_events.js`](./loadtest/k6_session_events.js)) — 30 concurrent SSE clients ramping over 60 seconds against a single uvicorn worker on a local Mac, embeddings on the fastembed fallback (no Gemini), coaching on the stub stream (no Groq):
+
+| Metric | Value |
+|---|---|
+| **Requests** | 1,988 across 60s |
+| **Throughput** | 32.8 req/s |
+| **Errors** | 0 (100% success rate) |
+| **SSE first byte** | med 124ms · **p95 512ms** · p99 746ms · max 1.94s |
+| **Total request duration** | med 605ms · p95 1.34s · p99 2.22s |
+
+> **The 400ms p95 first-byte target is missed (we hit 512ms).** Honest finding under sustained load. The single-worker `uvicorn` is the bottleneck — each request synchronously runs an embedding call (fastembed CPU inference, ~50ms) before the SSE stream opens. Three concrete v0.3 fixes documented in [DECISIONS.md](./DECISIONS.md): (1) bump `--workers 4` for the api container, (2) precompute memory context per user on a background tick, (3) emit the `: connecting` keep-alive *before* the embed call so first byte truly is sub-100ms.
+
+`GET /metrics` exposes a JSON snapshot of the same counters during a live run — see the snapshot at [`loadtest/results/metrics.json`](./loadtest/results/metrics.json) and the rendered HTML report at [`loadtest/results/results.html`](./loadtest/results/results.html). Reproduce the numbers with:
+
+```bash
+docker compose up -d db
+loadtest/k6_run.sh
+```
 
 ---
 

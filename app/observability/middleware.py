@@ -5,7 +5,19 @@ import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
+from app.observability.metrics import request_latency_ms, requests_total
+
 log = logging.getLogger("request")
+
+
+def _path_label(path: str) -> str:
+    """Collapse parameterised paths so the metric cardinality stays bounded."""
+    for prefix in ("/profile/", "/memory/", "/session/"):
+        if path.startswith(prefix):
+            return prefix.rstrip("/")
+    if path in ("/audit", "/health", "/metrics", "/"):
+        return path
+    return "other"
 
 
 class TracingMiddleware(BaseHTTPMiddleware):
@@ -14,7 +26,19 @@ class TracingMiddleware(BaseHTTPMiddleware):
         request.state.trace_id = trace_id
         start = time.perf_counter()
         response = await call_next(request)
-        latency_ms = int((time.perf_counter() - start) * 1000)
+        latency_ms_f = (time.perf_counter() - start) * 1000
+        latency_ms = int(latency_ms_f)
+
+        # Metrics: bounded-cardinality labels only.
+        path_label = _path_label(request.url.path)
+        requests_total.inc(
+            path=path_label,
+            status=str(response.status_code),
+            method=request.method,
+        )
+        request_latency_ms.observe(latency_ms_f, path=path_label)
+
+        # Structured log
         user_id = None
         auth = request.headers.get("authorization", "")
         if auth.lower().startswith("bearer "):

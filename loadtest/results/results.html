@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>NevUp · k6 SSE load test</title>
+<style>
+  body { font: 14px/1.5 ui-sans-serif, system-ui, -apple-system; background: #0d0c12;
+         color: #ecebef; padding: 32px; max-width: 920px; margin: 0 auto; }
+  h1, h2 { margin-top: 1.6em; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #2c2a36; font-variant-numeric: tabular-nums; }
+  th { font-weight: 600; color: #74717f; text-transform: uppercase; font-size: 11px; letter-spacing: .05em; }
+  .ok { color: #21c98a; }
+  .bad { color: #ff5d6c; }
+  .meta { color: #74717f; font-size: 12px; margin-top: 4px; }
+  pre { background: #16151c; padding: 12px; border-radius: 8px; overflow-x: auto; }
+</style>
+
+<h1>NevUp · k6 SSE load test</h1>
+<p class="meta">Source: <code>loadtest/results/summary.json</code> · iterations: 1988 · vus_max: 30</p>
+
+<h2>Threshold checks</h2>
+<table><tr><th>metric</th><th>threshold</th><th>status</th></tr>
+<tr><td>http_req_failed</td><td><code>rate&lt;0.01</code></td><td class='ok'>PASS</td></tr>
+<tr><td>sse_success_rate</td><td><code>rate&gt;0.99</code></td><td class='ok'>PASS</td></tr>
+<tr><td>sse_first_byte_ms</td><td><code>p(95)&lt;400</code></td><td class='bad'>FAIL</td></tr>
+<tr><td>sse_first_byte_ms</td><td><code>p(99)&lt;3000</code></td><td class='ok'>PASS</td></tr>
+</table>
+
+<h2>Headline metrics</h2>
+<table><tr><th>metric</th><th>min</th><th>med</th><th>avg</th><th>p(95)</th><th>p(99)</th><th>max</th></tr>
+<tr><td><code>sse_first_byte_ms</code></td><td>3.9</td><td>124.0</td><td>173.8</td><td>511.8</td><td>746.0</td><td>1941.1</td></tr>
+<tr><td><code>http_req_duration</code></td><td>18.3</td><td>605.5</td><td>625.3</td><td>1336.2</td><td>2219.1</td><td>2876.1</td></tr>
+<tr><td><code>http_req_waiting</code></td><td>3.9</td><td>124.0</td><td>173.8</td><td>511.8</td><td>746.0</td><td>1941.1</td></tr>
+<tr><td><code>iteration_duration</code></td><td>18.6</td><td>605.8</td><td>626.1</td><td>1340.5</td><td>2219.4</td><td>2888.3</td></tr>
+</table>
+
+<h2>Counters</h2>
+<table><tr><th>metric</th><th>count</th><th>rate</th></tr>
+<tr><td><code>http_reqs</code></td><td>1988</td><td>32.83946717204646</td></tr>
+<tr><td><code>http_req_failed</code></td><td>0</td><td></td></tr>
+<tr><td><code>iterations</code></td><td>1988</td><td>32.83946717204646</td></tr>
+<tr><td><code>sse_success_rate</code></td><td>1988</td><td>1</td></tr>
+</table>
+
+<h2>Notes</h2>
+<ul>
+  <li><code>sse_first_byte_ms</code> uses k6's <code>http_req_waiting</code> — the
+      time between sending the request and receiving the first byte of the body.
+      For our SSE endpoint, that first byte is the <code>:&nbsp;connecting</code>
+      keep-alive comment we send before any Groq output.</li>
+  <li><code>GEMINI_API_KEY</code> and <code>GROQ_API_KEY</code> were unset for
+      this run, so embeddings used the SHA fallback and coaching used the stub
+      stream. This isolates server-side handling from external API latency.</li>
+</ul>

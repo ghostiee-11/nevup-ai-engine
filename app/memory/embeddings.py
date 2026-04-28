@@ -8,6 +8,7 @@ import google.generativeai as genai
 from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from app.config import settings
+from app.observability.metrics import embedding_fallback_total
 
 log = logging.getLogger(__name__)
 
@@ -15,8 +16,14 @@ log = logging.getLogger(__name__)
 #   1. Gemini API  (real semantic, 768d native)
 #   2. fastembed   (real semantic, 384d → zero-padded to 768d)
 #   3. SHA-256     (deterministic pseudo-embedding, 768d, last resort)
-# Each tier exposes a counter for the /metrics endpoint (set in Phase 5).
+# In-process counter mirrors the labelled metric so tests can assert on it
+# without spinning up the metrics module's snapshot.
 EMBED_PATH_COUNTER: dict[str, int] = {"gemini": 0, "local": 0, "sha": 0}
+
+
+def _bump(tier: str) -> None:
+    EMBED_PATH_COUNTER[tier] += 1
+    embedding_fallback_total.inc(tier=tier)
 
 _gemini_configured = False
 _local_model = None  # lazy-loaded fastembed.TextEmbedding singleton
@@ -108,7 +115,7 @@ async def embed(text: str) -> list[float]:
             ):
                 with attempt:
                     vec = await _embed_gemini(text)
-            EMBED_PATH_COUNTER["gemini"] += 1
+            _bump("gemini")
             return vec
         except Exception as e:  # noqa: BLE001 — fall through to next tier
             log.warning("Gemini embed failed (%s) — trying local model", e)
@@ -116,13 +123,13 @@ async def embed(text: str) -> list[float]:
     # Tier 2: fastembed local
     try:
         vec = await _embed_local(text)
-        EMBED_PATH_COUNTER["local"] += 1
+        _bump("local")
         return vec
     except Exception as e:  # noqa: BLE001 — fall through to last-resort
         log.warning("local embed failed (%s) — using SHA fallback", e)
 
     # Tier 3: SHA pseudo-embedding (never raises)
-    EMBED_PATH_COUNTER["sha"] += 1
+    _bump("sha")
     return _fallback_embedding(text)
 
 
