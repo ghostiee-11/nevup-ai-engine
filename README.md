@@ -558,7 +558,14 @@ DATABASE_URL=postgresql+asyncpg://nevup:nevup@localhost:5433/nevup .venv/bin/pyt
 
 ## 🧠 Architectural decisions
 
-The full reasoning lives in [**DECISIONS.md**](./DECISIONS.md). Highlights:
+Deep-dive documentation:
+- [**docs/architecture.md**](./docs/architecture.md) — full component diagrams, request flows, persistence guarantees
+- [**docs/methodology.md**](./docs/methodology.md) — synthetic data, train/test split, threshold tuner, CV bands, what we did and did NOT measure
+- [**CHANGELOG.md**](./CHANGELOG.md) — v0.1.0 baseline + v0.2.0 rollup
+- [**eval/audit_phase_*.md**](./eval/) — committed CTO audits per phase
+- [**DECISIONS.md**](./DECISIONS.md) — one paragraph per architectural decision (v0.1 + v0.2)
+
+Highlights:
 
 | Decision | Why |
 |---|---|
