@@ -88,10 +88,16 @@ def _make_trade(
     revenge_flag: bool = False,
     asset_class: str | None = None,
     quantity_override: float | None = None,
+    target_notional_usd: tuple[float, float] | None = (1000.0, 2000.0),
     price_drift_pct: float | None = None,
     entry_rationale: str | None = None,
 ) -> dict:
-    """Append a single trade to ctx.trades and advance the cursor."""
+    """Append a single trade to ctx.trades and advance the cursor.
+
+    Quantity defaults to a fixed-notional range (USD per trade) so notional CV
+    stays low for disciplined traders. The position_sizing_inconsistency
+    generator passes target_notional_usd=None and overrides quantity directly.
+    """
     rng = ctx.rng
     asset, base_price, cls = _pick_asset(rng, asset_class)
     direction = direction or rng.choice(DIRECTIONS)
@@ -115,9 +121,17 @@ def _make_trade(
     else:
         exit_price = _round(entry_price * (1 - magnitude), cls)
 
-    # quantity — equity scaled lower, crypto fractional, forex contracts
+    # quantity: explicit override > fixed-notional sizing > legacy per-class random
     if quantity_override is not None:
         quantity = quantity_override
+    elif target_notional_usd is not None:
+        target = rng.uniform(*target_notional_usd)
+        if cls == "crypto":
+            quantity = max(0.0001, round(target / entry_price, 4))
+        elif cls == "forex":
+            quantity = max(1, int(round(target / entry_price)))
+        else:  # equity
+            quantity = max(1, int(round(target / entry_price)))
     elif cls == "equity":
         quantity = rng.randint(5, 60)
     elif cls == "crypto":
@@ -306,19 +320,21 @@ def _gen_time_of_day_bias_session(ctx: TradeCtx, bad_hours: tuple[int, ...]) -> 
 
 
 def _gen_position_sizing_session(ctx: TradeCtx) -> None:
-    """Pattern: highly variable quantities within at least one asset class.
+    """Pattern: highly variable NOTIONAL within at least one asset class.
 
-    The rule gates on max CV (across asset classes) ≥ 0.85. We pick one class
-    and emit quantities spanning two orders of magnitude.
+    With everyone else target-notional sizing (the new default in `_make_trade`),
+    a position-sizing-inconsistent trader stands out by deliberately spanning
+    two orders of magnitude in notional. We pick one class and emit notional
+    targets that range from $300 to $8000 per trade.
     """
     rng = ctx.rng
     target_class = "equity"
-    quantities = [3, 5, 4, 60, 80, 7, 100]  # CV ~ 1.0
-    rng.shuffle(quantities)
-    for q in quantities:
+    notional_targets = [300, 500, 400, 6000, 8000, 700, 10000]
+    rng.shuffle(notional_targets)
+    for nt in notional_targets:
         _make_trade(ctx, duration_minutes=rng.uniform(10, 40),
                     asset_class=target_class,
-                    quantity_override=q,
+                    target_notional_usd=(nt * 0.95, nt * 1.05),  # tight band per trade
                     emotional_state=rng.choice(EMOTIONAL_STATES),
                     plan_adherence=rng.choice([2, 3, 4]),
                     entry_rationale="Sizing varies with confidence")

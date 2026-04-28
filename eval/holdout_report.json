@@ -78,214 +78,214 @@
   },
   "details": [
     {
-      "userId": "4eea04e7-0ab5-4bde-a0a0-45026e068097",
-      "name": "Lane Zito",
+      "userId": "f2e9702d-11e9-4daa-ae69-81a35d3d9e56",
+      "name": "Kerry Tran",
       "truth": "revenge_trading",
       "pred": "revenge_trading",
       "topScore": 1.0
     },
     {
-      "userId": "cb8383f2-bb96-4602-ab11-5c3675f8e3a8",
-      "name": "Lane Foley",
-      "truth": "revenge_trading",
-      "pred": "revenge_trading",
-      "topScore": 1.0
-    },
-    {
-      "userId": "4e40bfba-a8cf-4589-9dc8-9e1a540e7d01",
-      "name": "Sage Ellis",
-      "truth": "revenge_trading",
-      "pred": "revenge_trading",
-      "topScore": 1.0
-    },
-    {
-      "userId": "6e5fbf71-9749-42b0-b1ad-e82ad05cc78d",
-      "name": "Noor Soto",
-      "truth": "overtrading",
-      "pred": "overtrading",
-      "topScore": 1.0
-    },
-    {
-      "userId": "9b5ad674-8896-44b2-8e92-605915ab7cd2",
-      "name": "Kerry Marsh",
-      "truth": "overtrading",
-      "pred": "overtrading",
-      "topScore": 1.0
-    },
-    {
-      "userId": "428f54aa-c1c9-4ab6-bea6-85f6c0a40088",
-      "name": "Kerry Jain",
-      "truth": "overtrading",
-      "pred": "overtrading",
-      "topScore": 1.0
-    },
-    {
-      "userId": "1564b478-8d62-4ba6-89fc-17cf3dd29956",
-      "name": "Kerry Quist",
-      "truth": "fomo_entries",
-      "pred": "fomo_entries",
-      "topScore": 1.0
-    },
-    {
-      "userId": "c742bbaf-7787-4d52-9d12-bbc65eaae175",
-      "name": "Morgan Wei",
-      "truth": "fomo_entries",
-      "pred": "fomo_entries",
-      "topScore": 1.0
-    },
-    {
-      "userId": "b2c4606b-8381-423f-a92f-aba1a6d50103",
-      "name": "Gray Doyle",
-      "truth": "fomo_entries",
-      "pred": "fomo_entries",
-      "topScore": 1.0
-    },
-    {
-      "userId": "a0db05fa-4758-4609-b2d2-2f14af3ae9ef",
-      "name": "Avery Vega",
-      "truth": "plan_non_adherence",
-      "pred": "plan_non_adherence",
-      "topScore": 1.0
-    },
-    {
-      "userId": "3bc1c038-f4ea-4d5d-bdbf-4e1cc14988c8",
-      "name": "Cameron Ito",
-      "truth": "plan_non_adherence",
-      "pred": "plan_non_adherence",
-      "topScore": 1.0
-    },
-    {
-      "userId": "b82bb912-0aab-4482-9eaa-3d0979fb464e",
-      "name": "Kerry Adler",
-      "truth": "plan_non_adherence",
-      "pred": "plan_non_adherence",
-      "topScore": 1.0
-    },
-    {
-      "userId": "cd6f0c98-38c8-4b7c-a396-a6331d6b5978",
-      "name": "Gray Nakamura",
-      "truth": "premature_exit",
-      "pred": "premature_exit",
-      "topScore": 0.8162
-    },
-    {
-      "userId": "f782b24b-1584-46bf-955d-ddac99e0859c",
-      "name": "Tatum Underwood",
-      "truth": "premature_exit",
-      "pred": "premature_exit",
-      "topScore": 0.8789
-    },
-    {
-      "userId": "e9bce624-b1c8-4325-ad75-5a78c36ad335",
-      "name": "Ellis Ito",
-      "truth": "premature_exit",
-      "pred": "premature_exit",
-      "topScore": 0.8789
-    },
-    {
-      "userId": "7fdcadde-6e65-4f53-abcf-1d4ebf023ce0",
-      "name": "Harper Gomez",
-      "truth": "loss_running",
-      "pred": "loss_running",
-      "topScore": 1.0
-    },
-    {
-      "userId": "24176169-10aa-499c-96cc-39dd29cc8ab0",
-      "name": "Blair Gomez",
-      "truth": "loss_running",
-      "pred": "loss_running",
-      "topScore": 1.0
-    },
-    {
-      "userId": "8c9da802-759c-4c8f-958e-152dc6edd12d",
-      "name": "Noor Quist",
-      "truth": "loss_running",
-      "pred": "loss_running",
-      "topScore": 1.0
-    },
-    {
-      "userId": "f02e9e71-54b9-461d-b173-6c9a2ba80442",
-      "name": "Reese Jain",
-      "truth": "session_tilt",
-      "pred": "session_tilt",
-      "topScore": 1.0
-    },
-    {
-      "userId": "ee1d1945-a381-42d5-9897-2febfd8f6988",
-      "name": "Avery Nakamura",
-      "truth": "session_tilt",
-      "pred": "session_tilt",
-      "topScore": 1.0
-    },
-    {
-      "userId": "bc679ccb-3d03-4a63-b324-d1282fafff42",
-      "name": "Dakota Quist",
-      "truth": "session_tilt",
-      "pred": "session_tilt",
-      "topScore": 1.0
-    },
-    {
-      "userId": "7a2b02d9-a06c-4562-9e5b-c2a556b71e2a",
-      "name": "Ellis Nakamura",
-      "truth": "time_of_day_bias",
-      "pred": "time_of_day_bias",
-      "topScore": 0.75
-    },
-    {
-      "userId": "d7cc2646-f3cc-44e5-ba94-3e45207e73da",
-      "name": "Blair Underwood",
-      "truth": "time_of_day_bias",
-      "pred": "time_of_day_bias",
-      "topScore": 0.75
-    },
-    {
-      "userId": "a2954ea0-f35f-475f-82bb-7a10348ea61e",
-      "name": "Sage Zito",
-      "truth": "time_of_day_bias",
-      "pred": "time_of_day_bias",
-      "topScore": 0.75
-    },
-    {
-      "userId": "c358d1fb-178c-406b-bead-0a47d0814483",
-      "name": "Parker Yamada",
-      "truth": "position_sizing_inconsistency",
-      "pred": "position_sizing_inconsistency",
-      "topScore": 0.5475
-    },
-    {
-      "userId": "3ccb9d66-ee0d-466b-a568-50123ef8cc0f",
-      "name": "Morgan Blake",
-      "truth": "position_sizing_inconsistency",
-      "pred": "position_sizing_inconsistency",
-      "topScore": 0.5475
-    },
-    {
-      "userId": "aef30f89-c232-4358-94fe-120093f2ea4d",
-      "name": "Parker Tran",
-      "truth": "position_sizing_inconsistency",
-      "pred": "position_sizing_inconsistency",
-      "topScore": 0.5475
-    },
-    {
-      "userId": "5aee060c-5c54-4245-9fbe-f031a618130e",
+      "userId": "17d30f32-8de1-496c-9a9a-206a16f142a2",
       "name": "Tatum Tran",
+      "truth": "revenge_trading",
+      "pred": "revenge_trading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "a48aa108-b599-477f-b78e-e9e8b676291d",
+      "name": "Indigo Nakamura",
+      "truth": "revenge_trading",
+      "pred": "revenge_trading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "94010dfe-7921-4c7c-a119-ceee0fb91307",
+      "name": "Frankie Soto",
+      "truth": "overtrading",
+      "pred": "overtrading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "079bf5e6-2275-41e2-b141-52c7a0dcec7d",
+      "name": "Dakota Xu",
+      "truth": "overtrading",
+      "pred": "overtrading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "f37590d3-73dd-4d31-80e1-0b5111285804",
+      "name": "Dakota Nakamura",
+      "truth": "overtrading",
+      "pred": "overtrading",
+      "topScore": 1.0
+    },
+    {
+      "userId": "448f3dbc-0f8a-4e7c-9084-061b20323ec5",
+      "name": "Blair Doyle",
+      "truth": "fomo_entries",
+      "pred": "fomo_entries",
+      "topScore": 1.0
+    },
+    {
+      "userId": "32ccea25-31fd-4e5e-b865-61ef113145d2",
+      "name": "Gray Ortega",
+      "truth": "fomo_entries",
+      "pred": "fomo_entries",
+      "topScore": 1.0
+    },
+    {
+      "userId": "08a66a64-7b03-461b-9705-a33e52f02148",
+      "name": "Quinn Gomez",
+      "truth": "fomo_entries",
+      "pred": "fomo_entries",
+      "topScore": 0.96
+    },
+    {
+      "userId": "247d2d52-7ee0-438e-a3cd-0cb1a7b3b6f9",
+      "name": "Frankie Doyle",
+      "truth": "plan_non_adherence",
+      "pred": "plan_non_adherence",
+      "topScore": 1.0
+    },
+    {
+      "userId": "fcc97fa6-13b8-405e-b291-39a9626953e6",
+      "name": "Gray Wei",
+      "truth": "plan_non_adherence",
+      "pred": "plan_non_adherence",
+      "topScore": 1.0
+    },
+    {
+      "userId": "a68fc907-7edc-4ce1-b0d9-12733e6d9f97",
+      "name": "Noor Nakamura",
+      "truth": "plan_non_adherence",
+      "pred": "plan_non_adherence",
+      "topScore": 1.0
+    },
+    {
+      "userId": "7dd10830-c027-4c77-b94a-c12bd30987b5",
+      "name": "Tatum Yamada",
+      "truth": "premature_exit",
+      "pred": "premature_exit",
+      "topScore": 0.9051
+    },
+    {
+      "userId": "91718c7e-fdd8-42b2-b00b-fc961b3a2f89",
+      "name": "Sage Underwood",
+      "truth": "premature_exit",
+      "pred": "premature_exit",
+      "topScore": 0.9249
+    },
+    {
+      "userId": "c12fccd3-bbcc-44c4-8aec-61771756f8f7",
+      "name": "Frankie Gomez",
+      "truth": "premature_exit",
+      "pred": "premature_exit",
+      "topScore": 0.9209
+    },
+    {
+      "userId": "b81ae4a3-c4cb-4c68-a319-594f630ee896",
+      "name": "Reese Marsh",
+      "truth": "loss_running",
+      "pred": "loss_running",
+      "topScore": 1.0
+    },
+    {
+      "userId": "7d2811fa-e05e-4d2f-84aa-1dff282e4148",
+      "name": "Oakley Adler",
+      "truth": "loss_running",
+      "pred": "loss_running",
+      "topScore": 1.0
+    },
+    {
+      "userId": "41db7842-57d8-446b-9ac6-fff46fa88542",
+      "name": "Oakley Marsh",
+      "truth": "loss_running",
+      "pred": "loss_running",
+      "topScore": 1.0
+    },
+    {
+      "userId": "6cbbcd70-024a-42d0-9692-017962c100a0",
+      "name": "Cameron Yamada",
+      "truth": "session_tilt",
+      "pred": "session_tilt",
+      "topScore": 1.0
+    },
+    {
+      "userId": "33080457-0477-4d1d-b1ba-e62229f4cfba",
+      "name": "Oakley Hayes",
+      "truth": "session_tilt",
+      "pred": "session_tilt",
+      "topScore": 1.0
+    },
+    {
+      "userId": "f0de1e16-1c41-4136-a9b4-79c5eedc02e9",
+      "name": "Ellis Marsh",
+      "truth": "session_tilt",
+      "pred": "session_tilt",
+      "topScore": 1.0
+    },
+    {
+      "userId": "bbd5c528-edb4-47e4-b86d-806f2919b585",
+      "name": "Parker Ellis",
+      "truth": "time_of_day_bias",
+      "pred": "time_of_day_bias",
+      "topScore": 0.75
+    },
+    {
+      "userId": "d7ae0952-510d-429e-a986-345282d0c34f",
+      "name": "Noor Khan",
+      "truth": "time_of_day_bias",
+      "pred": "time_of_day_bias",
+      "topScore": 0.75
+    },
+    {
+      "userId": "f7424101-019f-4738-8727-f8548d887c1e",
+      "name": "Sage Wei",
+      "truth": "time_of_day_bias",
+      "pred": "time_of_day_bias",
+      "topScore": 0.75
+    },
+    {
+      "userId": "b262cfdc-fa56-421f-99e9-960d59308bc8",
+      "name": "Cameron Soto",
+      "truth": "position_sizing_inconsistency",
+      "pred": "position_sizing_inconsistency",
+      "topScore": 0.9421
+    },
+    {
+      "userId": "668baa47-738d-467c-b651-1d4a8a0d2029",
+      "name": "Gray Ito",
+      "truth": "position_sizing_inconsistency",
+      "pred": "position_sizing_inconsistency",
+      "topScore": 1.0
+    },
+    {
+      "userId": "7b59a1f4-b2ad-453a-a958-d27868cac2f4",
+      "name": "Morgan Cruz",
+      "truth": "position_sizing_inconsistency",
+      "pred": "position_sizing_inconsistency",
+      "topScore": 0.9317
+    },
+    {
+      "userId": "0a3ca069-c134-476e-a31a-beb5802ea3e9",
+      "name": "Noor Zito",
       "truth": "none",
       "pred": "none",
       "topScore": 0.0
     },
     {
-      "userId": "f3944619-5596-406c-9c13-dc8a9562b6d9",
-      "name": "Parker Gomez",
-      "truth": "none",
-      "pred": "none",
-      "topScore": 0.1026
-    },
-    {
-      "userId": "4ddb98de-7e35-4431-92e9-816c63cc975a",
-      "name": "Oakley Soto",
+      "userId": "57c54c37-8c48-42f7-9b03-add4bf3ab0da",
+      "name": "Reese Foley",
       "truth": "none",
       "pred": "none",
       "topScore": 0.0
+    },
+    {
+      "userId": "8e5e38d2-dc18-4e63-bcad-7491d1e24f28",
+      "name": "Frankie Reyes",
+      "truth": "none",
+      "pred": "none",
+      "topScore": 0.0571
     }
   ],
   "y_true": [

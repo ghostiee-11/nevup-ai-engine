@@ -10,37 +10,74 @@ from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt,
 from app.config import settings
 
 log = logging.getLogger(__name__)
-_configured = False
+
+# Three-tier fallback chain:
+#   1. Gemini API  (real semantic, 768d native)
+#   2. fastembed   (real semantic, 384d → zero-padded to 768d)
+#   3. SHA-256     (deterministic pseudo-embedding, 768d, last resort)
+# Each tier exposes a counter for the /metrics endpoint (set in Phase 5).
+EMBED_PATH_COUNTER: dict[str, int] = {"gemini": 0, "local": 0, "sha": 0}
+
+_gemini_configured = False
+_local_model = None  # lazy-loaded fastembed.TextEmbedding singleton
+_LOCAL_MODEL_NAME = "BAAI/bge-small-en-v1.5"
+_LOCAL_DIM = 384  # padded to settings.embedding_dim for column compatibility
 
 
-def _configure() -> bool:
+def _configure_gemini() -> bool:
     """Returns True if Gemini is configured (key present), False otherwise."""
-    global _configured
+    global _gemini_configured
     if not settings.gemini_api_key:
         return False
-    if not _configured:
+    if not _gemini_configured:
         genai.configure(api_key=settings.gemini_api_key)
-        _configured = True
+        _gemini_configured = True
     return True
 
 
-async def _embed_call(text: str) -> dict:
-    return await asyncio.to_thread(
+def _get_local_model():
+    """Lazy-load the fastembed singleton. First call downloads the model (~80MB);
+    subsequent calls reuse the in-memory instance.
+    """
+    global _local_model
+    if _local_model is None:
+        from fastembed import TextEmbedding  # imported here to keep cold-start light
+        log.info("loading local embedding model %s (first call only)", _LOCAL_MODEL_NAME)
+        _local_model = TextEmbedding(model_name=_LOCAL_MODEL_NAME)
+    return _local_model
+
+
+async def _embed_gemini(text: str) -> list[float]:
+    res = await asyncio.to_thread(
         genai.embed_content,
         model=settings.gemini_embed_model,
         content=text,
         task_type="retrieval_document",
     )
+    return list(res["embedding"])
+
+
+async def _embed_local(text: str) -> list[float]:
+    """Run fastembed on a worker thread; pad 384d → 768d so the existing pgvector
+    column accepts the result. Cosine similarity is preserved under zero-padding
+    when *all* vectors are produced the same way.
+    """
+    def _run() -> list[float]:
+        model = _get_local_model()
+        vec = next(model.embed([text]))
+        out = list(map(float, vec))
+        if len(out) < settings.embedding_dim:
+            out.extend([0.0] * (settings.embedding_dim - len(out)))
+        return out[: settings.embedding_dim]
+    return await asyncio.to_thread(_run)
 
 
 def _fallback_embedding(text: str, dim: int | None = None) -> list[float]:
-    """Deterministic pseudo-embedding for when Gemini is unavailable.
+    """Deterministic pseudo-embedding for when both Gemini AND fastembed fail.
 
-    Uses SHA-256 expanded to `dim` floats in [-1, 1]. Not semantically meaningful,
-    but deterministic per text — so memory upsert+retrieve still round-trips
-    (similar text → identical vector → cosine distance 0). The brief mandates
-    fallback paths for every external call; this lets the system keep running
-    without a Gemini key.
+    Uses SHA-256 expanded to `dim` floats in [-1, 1]. Not semantic — same text
+    in always yields same vector out — so memory upsert+retrieve still
+    round-trips. Real semantics return as soon as Gemini OR fastembed works.
     """
     target = dim or settings.embedding_dim
     out: list[float] = []
@@ -57,25 +94,36 @@ def _fallback_embedding(text: str, dim: int | None = None) -> list[float]:
 
 
 async def embed(text: str) -> list[float]:
-    """Return an embedding vector. Falls back to a deterministic SHA-based
-    pseudo-embedding if Gemini is missing or all retries fail.
+    """Return an embedding vector. Tries Gemini → fastembed → SHA in that order;
+    each tier increments its counter in EMBED_PATH_COUNTER for /metrics.
     """
-    if not _configure():
-        log.info("GEMINI_API_KEY not set — using fallback embedding")
-        return _fallback_embedding(text)
+    # Tier 1: Gemini
+    if _configure_gemini():
+        try:
+            async for attempt in AsyncRetrying(
+                stop=stop_after_attempt(3),
+                wait=wait_exponential(multiplier=0.5, min=0.5, max=4),
+                retry=retry_if_exception_type(Exception),
+                reraise=True,
+            ):
+                with attempt:
+                    vec = await _embed_gemini(text)
+            EMBED_PATH_COUNTER["gemini"] += 1
+            return vec
+        except Exception as e:  # noqa: BLE001 — fall through to next tier
+            log.warning("Gemini embed failed (%s) — trying local model", e)
+
+    # Tier 2: fastembed local
     try:
-        async for attempt in AsyncRetrying(
-            stop=stop_after_attempt(3),
-            wait=wait_exponential(multiplier=0.5, min=0.5, max=4),
-            retry=retry_if_exception_type(Exception),
-            reraise=True,
-        ):
-            with attempt:
-                res = await _embed_call(text)
-        return list(res["embedding"])
-    except Exception as e:  # noqa: BLE001 -- any Gemini failure must fall back
-        log.warning("Gemini embed failed (%s) — using fallback embedding", e)
-        return _fallback_embedding(text)
+        vec = await _embed_local(text)
+        EMBED_PATH_COUNTER["local"] += 1
+        return vec
+    except Exception as e:  # noqa: BLE001 — fall through to last-resort
+        log.warning("local embed failed (%s) — using SHA fallback", e)
+
+    # Tier 3: SHA pseudo-embedding (never raises)
+    EMBED_PATH_COUNTER["sha"] += 1
+    return _fallback_embedding(text)
 
 
 async def embed_batch(texts: Iterable[str]) -> list[list[float]]:

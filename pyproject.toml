@@ -20,6 +20,9 @@ dependencies = [
   "scikit-learn==1.5.2",
   "numpy==2.1.2",
   "tenacity==9.0.0",
+  # ONNX-based local embedding model — used as fallback when Gemini is missing
+  # or rate-limited. ~80MB total install vs ~600MB for sentence-transformers/torch.
+  "fastembed==0.4.2",
 ]
 
 [project.optional-dependencies]

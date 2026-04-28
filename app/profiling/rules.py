@@ -116,25 +116,41 @@ def _score_plan_non_adherence(trades: list[dict]) -> dict:
 
 
 def _score_position_sizing_inconsistency(trades: list[dict]) -> dict:
-    """Distinctive: very high coefficient of variation in any single asset class."""
+    """Distinctive: very high coefficient of variation in NOTIONAL dollars at risk
+    (entry_price × quantity), measured PER UNIQUE ASSET — not per asset class.
+
+    Per-asset matters because crypto has BTC at $60k and SOL at $145; mixing
+    them at the asset_class level would call any multi-asset trader inconsistent
+    even if they size each asset to the same dollar amount. Per-asset CV cleanly
+    separates "I always risk $1000 on AAPL" from "I sometimes risk $300 and
+    sometimes $10000 on AAPL" — the latter is the actual pathology.
+    """
     p = THRESHOLDS["position_sizing_inconsistency"]
-    by_class: dict[str, list[float]] = {}
+    by_asset: dict[str, list[float]] = {}
     for t in trades:
-        by_class.setdefault(t["asset_class"], []).append(float(t["quantity"]))
-    cv_per_class = {}
-    for cls, qs in by_class.items():
-        if len(qs) < p["min_trades_per_class"]:
+        ep = t.get("entry_price")
+        q = t.get("quantity")
+        if ep is None or q is None:
             continue
-        mean = sum(qs) / len(qs)
+        try:
+            notional = abs(float(ep) * float(q))
+        except (TypeError, ValueError):
+            continue
+        by_asset.setdefault(t["asset"], []).append(notional)
+    cv_per_asset = {}
+    for asset, ns in by_asset.items():
+        if len(ns) < p["min_trades_per_class"]:
+            continue
+        mean = sum(ns) / len(ns)
         if mean == 0:
             continue
-        var = sum((q - mean) ** 2 for q in qs) / len(qs)
-        cv_per_class[cls] = round((var ** 0.5) / mean, 4)
-    if not cv_per_class:
+        var = sum((n - mean) ** 2 for n in ns) / len(ns)
+        cv_per_asset[asset] = round((var ** 0.5) / mean, 4)
+    if not cv_per_asset:
         return {"pathology": "position_sizing_inconsistency", "score": 0.0, "evidence": []}
-    max_cv = max(cv_per_class.values())
-    evidence = [{"asset_class": k, "coefficient_of_variation": v}
-                for k, v in sorted(cv_per_class.items(), key=lambda x: -x[1])][:3]
+    max_cv = max(cv_per_asset.values())
+    evidence = [{"asset": k, "notional_cv": v}
+                for k, v in sorted(cv_per_asset.items(), key=lambda x: -x[1])][:3]
     if max_cv < p["max_cv_min"]:
         return {"pathology": "position_sizing_inconsistency", "score": 0.0, "evidence": evidence}
     score = min(1.0, (max_cv - p["score_subtract"]))
